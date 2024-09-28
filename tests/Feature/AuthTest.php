@@ -30,16 +30,14 @@ class AuthTest extends TestCase
         $this->seed([UserSeeder::class]);
 
         $response = Auth::attempt([
-            "email" => "jirb@localhost",
-            "password" => "rahasia"
-        ]);
+            "email" => "1@localhost",
+            "password" => "1"
+        ], true);
         self::assertTrue($response);
 
         $user = Auth::user();
 
-        echo $user->email;
-
-        self::assertEquals("jirb@localhost", $user->email);
+        self::assertEquals("1@localhost", $user->email);
     }
 
     public function testLoginSuccess()
@@ -110,6 +108,42 @@ class AuthTest extends TestCase
 
         self::assertTrue(Gate::allows("get-contact", $contact));
 
+    }
+
+    public function testGateFacades()
+    {
+
+        $this->seed([UserSeeder::class, ContactsSeeder::class]);
+
+        $user = User::where("email", "1@localhost")->first();
+
+        Auth::login($user);
+
+        $contact = Contact::where("name", "=", "test")
+            ->first();
+
+        self::assertTrue(Gate::allows("get-contact", $contact));
+
+        self::assertTrue(Gate::any(["delete-contact", "delete-contact", "update-contact"], $contact));
+        self::assertFalse(Gate::none(["delete-contact", "delete-contact", "update-contact"], $contact));
+
+    }
+
+    public function testGateUser()
+    {
+
+        $this->seed([UserSeeder::class, ContactsSeeder::class]);
+
+        $user = User::where("email", "1@localhost")->first();
+
+        $gate = Gate::forUser($user);
+
+        $contact = Contact::where("name", "=", "test")
+            ->first();
+
+        self::assertTrue($gate->allows("get-contact", $contact));
+        self::assertTrue($gate->any(["delete-contact", "delete-contact", "update-contact"], $contact));
+        self::assertFalse($gate->none(["delete-contact", "delete-contact", "update-contact"], $contact));
     }
 
 
