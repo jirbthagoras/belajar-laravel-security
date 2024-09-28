@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
                 "name" => "1",
                 "email" => "1@localhost",
                 "password" => Hash::make("1"),
+                "token" => "secret"
             ]);
 
         User::query()
@@ -26,6 +27,7 @@ class UserSeeder extends Seeder
                 "name" => "2",
                 "email" => "2@localhost",
                 "password" => Hash::make("2"),
+                "token" => "secret"
             ]);
     }
 }

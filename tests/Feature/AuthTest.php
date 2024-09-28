@@ -57,12 +57,26 @@ class AuthTest extends TestCase
         $this->seed([UserSeeder::class]);
 
         $this->get("/users/current")
-            ->assertRedirect("/users/login");
+            ->assertRedirect("/users/login")
+            ->assertDontSeeText("Hello Guest");
 
-        $user  = User::where("email", "2@localhost")->first();
-        $this->actingAs($user)
-        ->get("/users/current")
-        ->assertSeeText("Hello 2");
+            $user  = User::where("email", "2@localhost")->first();
+            $this->actingAs($user)
+            ->get("/users/current")
+            ->assertSeeText("Hello 2");
+
+    }
+
+    public function testGuard()
+    {
+
+        $this->seed([UserSeeder::class]);
+
+        $this->get("/api/users/current", [
+            "Authorization" => 'secret',
+        ])
+            ->assertStatus(200)
+            ->assertSeeText("Hello 1");
 
     }
 
