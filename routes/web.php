@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post("/users/login", [\App\Http\Controllers\UserController::class, "login"])
+->name("login");
+Route::get("/users/current", [\App\Http\Controllers\UserController::class, "current"])
+->middleware("auth");
