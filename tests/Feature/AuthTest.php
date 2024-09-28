@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\Contact;
 use App\Models\User;
+use Database\Seeders\ContactsSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -90,6 +93,22 @@ class AuthTest extends TestCase
         ])
             ->assertStatus(200)
             ->assertSeeText("Hello khannedy");
+
+    }
+
+    public function testGateTest()
+    {
+
+        $this->seed([UserSeeder::class, ContactsSeeder::class]);
+
+        $user = User::where("email", "1@localhost")->first();
+
+        Auth::login($user);
+
+        $contact = Contact::where("name", "=", "test")
+        ->first();
+
+        self::assertTrue(Gate::allows("get-contact", $contact));
 
     }
 
