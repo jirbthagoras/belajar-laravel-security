@@ -146,5 +146,23 @@ class AuthTest extends TestCase
         self::assertFalse($gate->none(["delete-contact", "delete-contact", "update-contact"], $contact));
     }
 
+    public function testGateResponse()
+    {
+
+        $this->seed([UserSeeder::class, ContactsSeeder::class]);
+
+        $user = User::where("email", "1@localhost")->first();
+
+        Auth::login($user);
+
+        $contact = Contact::where("name", "=", "test")
+            ->first();
+
+        $response = Gate::inspect("create-contact");
+
+        self::assertFalse($response->allowed());
+
+    }
+
 
 }
