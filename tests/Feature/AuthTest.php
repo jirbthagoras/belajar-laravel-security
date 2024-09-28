@@ -80,5 +80,18 @@ class AuthTest extends TestCase
 
     }
 
+    public function testCustomProvider()
+    {
+
+        $this->seed([UserSeeder::class]);
+
+        $this->get("/simple-api/users/current", [
+            "Authorization" => 'secret',
+        ])
+            ->assertStatus(200)
+            ->assertSeeText("Hello khannedy");
+
+    }
+
 
 }
