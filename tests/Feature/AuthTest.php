@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Contact;
+use App\Models\Todo;
 use App\Models\User;
 use Database\Seeders\ContactsSeeder;
+use Database\Seeders\TodoSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -161,6 +163,23 @@ class AuthTest extends TestCase
         $response = Gate::inspect("create-contact");
 
         self::assertFalse($response->allowed());
+        self::assertEquals("You're Not The Admin",$response->message());
+
+    }
+
+    public function testPolicy()
+    {
+
+        $this->seed([UserSeeder::class, TodoSeeder::class]);
+
+        $user = User::where("email", "=", "1@localhost")->first();
+
+        Auth::login($user);
+
+        $todo = Todo::first();
+
+        self::assertTrue(Gate::allows("view", $todo));
+        self::assertTrue(Gate::allows("delete", $todo));
 
     }
 
