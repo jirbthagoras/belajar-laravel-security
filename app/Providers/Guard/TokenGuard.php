@@ -43,7 +43,7 @@ class TokenGuard implements Guard
 
     public function validate(array $credentials = [])
     {
-        return $this->provider->validateCredentials($this->user, $credentials);
+        $this->provider->validateCredentials($this->user, $credentials);
     }
 
 
