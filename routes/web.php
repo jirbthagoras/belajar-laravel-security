@@ -27,3 +27,5 @@ Route::get("/api/users/current", [\App\Http\Controllers\UserController::class, "
 
 Route::get("/simple-api/users/current", [\App\Http\Controllers\UserController::class, "current"])
     ->middleware(["auth:simple-token"]);
+
+Route::post("/api/todo", [\App\Http\Controllers\TodoController::class, "create"]);

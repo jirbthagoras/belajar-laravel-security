@@ -183,5 +183,54 @@ class AuthTest extends TestCase
 
     }
 
+    public function testAuthorizable()
+    {
+
+        $this->seed([UserSeeder::class, TodoSeeder::class]);
+
+        $user = User::where("email", "=", "1@localhost")->first();
+
+        $todo = Todo::first();
+
+        self::assertTrue($user->can("view", $todo));
+        self::assertTrue($user->can("delete", $todo));
+
+    }
+
+    public function testRequestAuthorization()
+    {
+
+        $this->seed([UserSeeder::class, TodoSeeder::class]);
+
+        $this->post("/api/todo")
+            ->assertStatus(403);
+
+        $user = User::where("name", "admin")->first();
+
+        $this->actingAs($user)
+            ->post("/api/todo")
+            ->assertStatus(200);
+
+    }
+
+    public function testView()
+    {
+
+        $this->seed([UserSeeder::class, TodoSeeder::class]);
+//
+//        $user = User::where("email", "=", "1@localhost")->first();
+//
+//        Auth::login($user);
+
+        $todo = Todo::query()->get();
+
+        $this->view("todo", [
+            "todos" => $todo
+        ])
+            ->assertSeeText("No Edit");
+
+
+    }
+
 
 }
