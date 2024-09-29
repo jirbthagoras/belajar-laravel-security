@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -229,6 +230,41 @@ class AuthTest extends TestCase
         ])
             ->assertSeeText("No Edit");
 
+
+    }
+
+    public function testRegistrationGuest()
+    {
+
+        self::assertTrue(Gate::allows("create", User::class));
+
+    }
+
+    public function testRegistrattionUser()
+    {
+        $this->seed([UserSeeder::class]);
+
+        $user = User::where("email", "1@localhost")->first();
+
+        Auth::login($user);
+
+        self::assertFalse(Gate::allows("create", User::class));
+    }
+
+    public function testAdmin()
+    {
+
+        $this->seed([UserSeeder::class, TodoSeeder::class]);
+
+        $todo = Todo::first();
+
+        $user = new User([
+           "name" => "superadmin",
+           "email" => "superadmin@localhost",
+           "password" => Hash::make("rahasia"),
+        ]);
+
+        self::assertTrue($user->can("view", $todo));
 
     }
 
